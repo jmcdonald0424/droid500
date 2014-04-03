@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Deploy to device</actionName>
+            <displayName>Deploy to device</displayName>
+            <goals>
+                <goal>android:deploy</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-Run on device</actionName>
+            <displayName>Run on device</displayName>
+            <goals>
+                <goal>android:run</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>run</actionName>
+            <goals>
+                <goal>android:deploy</goal>
+                <goal>android:run</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <goals>
+                <goal>android:run</goal>
+            </goals>
+        </action>
+    </actions>
