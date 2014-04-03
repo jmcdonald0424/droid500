@@ -95,7 +95,7 @@ public class GLRenderer implements Renderer {
         MainGame game = activity.getGame();
         Sprite sprite = new Sprite();
         sprite.setBaseScale(ssu);
-        sprite.generateUvCoords(44);
+        sprite.generateUvCoords(40);
         sprites.add(sprite);
         game.getPlayers().get(0).getCards().get(0).setSprite(sprite);
     }

@@ -107,7 +107,8 @@ public class Sprite {
         float xMargin = 1.0f / 85.3f; // This value is dependent on the image, so consider passing in or creating subclass to handle it
         float x1 = xOffset * (imageIndex % columns) + xMargin;
         float x2 = x1 + xOffset - xMargin * 2;
-        float y1 = yOffset * (imageIndex % rows);
+        //float y1 = yOffset * (imageIndex % rows);
+        float y1 = yOffset * (float)Math.floor(imageIndex/rows);
         float y2 = y1 + yOffset;
 
         // Top Left
