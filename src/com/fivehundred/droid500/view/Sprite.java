@@ -2,17 +2,19 @@ package com.fivehundred.droid500.view;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import com.fivehundred.droid500.view.utils.ViewConstants;
 import com.fivehundred.droid500.view.utils.ViewUtils;
 
 public class Sprite {
 
     private RectF base;
     private RectF scaledBase;
-    private PointF translation;
-    private float angle;
-    private float scale;
+    protected PointF translation;
+    protected float angle;
+    protected float scale;
     private float uvs[];
     private int index;
+    private ShadowSprite shadow;
 
     public Sprite() {
         base = new RectF(-20f, 30f, 20f, -30f); // Left, Top, Right, Bottom relative to 0,0
@@ -42,14 +44,17 @@ public class Sprite {
     public void translate(float dX, float dY) {
         translation.x += dX;
         translation.y += dY;
+        shadow.translate(dX, dY);
     }
 
     public void scale(float dS) {
         scale += dS;
+        shadow.scale(dS);
     }
 
     public void rotate(float dA) {
         angle += dA;
+        shadow.rotate(dA);
     }
 
     public float[] getVertices() {
@@ -124,6 +129,45 @@ public class Sprite {
         uvs[6] = x2;
         uvs[7] = y1;
     }
+    
+    public void generateShadow(float ssu){
+        shadow = new ShadowSprite();
+        shadow.generateUvCoords(ViewConstants.CARD_SHADOW_INDEX);
+        shadow.setBaseScale(ssu);
+        shadow.setScale((float)(scale + scale * 0.10));
+        shadow.setTranslation(translateShadow(ssu));
+    }
+    
+    private PointF translateShadow(float ssu){
+        PointF shadowCoords = new PointF();
+        shadowCoords.x = translation.x + 3*ssu;
+        shadowCoords.y = translation.y - 2*ssu;
+        return shadowCoords;
+    }
+
+    public PointF getTranslation() {
+        return translation;
+    }
+
+    public void setTranslation(PointF translation) {
+        this.translation = translation;
+    }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
 
     public float[] getUvs() {
         return uvs;
@@ -139,6 +183,14 @@ public class Sprite {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public ShadowSprite getShadow() {
+        return shadow;
+    }
+
+    public void setShadow(ShadowSprite shadow) {
+        this.shadow = shadow;
     }
 
 }

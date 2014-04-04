@@ -96,15 +96,16 @@ public class GLRenderer implements Renderer {
         Sprite sprite = new Sprite();
         sprite.setBaseScale(ssu);
         sprite.generateUvCoords(40);
+        sprite.generateShadow(ssu);
         sprites.add(sprite);
         game.getPlayers().get(0).getCards().get(0).setSprite(sprite);
     }
 
     private void render(float[] m) {
 
-        // clear Screen and Depth Buffer and set clear color
+        // clear Screen and Depth Buffer and set clear color to green
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.13f, 0.46f, 0.067f, 1.0f);
 
         // get handle to vertex shader's vPosition member and add vertices
         int mPositionHandle = GLES20.glGetAttribLocation(ShaderUtils.shaderImage, "vPosition");
@@ -174,7 +175,7 @@ public class GLRenderer implements Renderer {
         setupImage();
 
         // Set the clear color to black
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1);
+        //GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1);
 
         // Blend
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -231,6 +232,7 @@ public class GLRenderer implements Renderer {
         float vertices[] = new float[0];
 
         for (Sprite sprite : sprites) {
+            vertices = combineArrays(vertices, sprite.getShadow().getVertices());
             vertices = combineArrays(vertices, sprite.getVertices());
         }
 
@@ -245,9 +247,9 @@ public class GLRenderer implements Renderer {
     private void setupIndices() {
 
         // The order of vertex rendering for a quad
-        indices = new short[sprites.size() * 6];
+        indices = new short[sprites.size() * 6 * 2]; // Multiply by 2 to account for shadow sprites
         int last = 0;
-        for (int i = 0; i < sprites.size(); i++) {
+        for (int i = 0; i < sprites.size()*2; i++) {
             // We need to set the new indices for the new quad
             indices[(i * 6) + 0] = (short) (last + 0);
             indices[(i * 6) + 1] = (short) (last + 1);
@@ -274,6 +276,8 @@ public class GLRenderer implements Renderer {
         float uvs[] = new float[0];
 
         for (Sprite sprite : sprites) {
+            // Draw shadow UVs first so source object is drawn on top
+            uvs = combineArrays(uvs, sprite.getShadow().getUvs());
             uvs = combineArrays(uvs, sprite.getUvs());
         }
 
