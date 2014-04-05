@@ -134,14 +134,14 @@ public class Sprite {
         shadow = new ShadowSprite();
         shadow.generateUvCoords(ViewConstants.CARD_SHADOW_INDEX);
         shadow.setBaseScale(ssu);
-        shadow.setScale((float)(scale + scale * 0.10));
+        shadow.setScale((float)(scale + scale * 0.05));
         shadow.setTranslation(translateShadow(ssu));
     }
     
     private PointF translateShadow(float ssu){
         PointF shadowCoords = new PointF();
-        shadowCoords.x = translation.x + 3*ssu;
-        shadowCoords.y = translation.y - 2*ssu;
+        shadowCoords.x = translation.x + 2*ssu;
+        shadowCoords.y = translation.y - 1*ssu;
         return shadowCoords;
     }
 
