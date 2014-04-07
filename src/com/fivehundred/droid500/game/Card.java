@@ -1,5 +1,7 @@
 package com.fivehundred.droid500.game;
 
+import com.fivehundred.droid500.utils.ConversionUtils;
+import com.fivehundred.droid500.utils.GameConstants;
 import com.fivehundred.droid500.view.Sprite;
 
 public class Card{
@@ -8,8 +10,20 @@ public class Card{
     private String suit;
     private Sprite sprite;
     
-    public Card(){
-        
+    public Card(String suit, Integer power){
+        this.suit = suit;
+        this.power = power;
+    }
+    
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(ConversionUtils.getPowerLabel(power));
+        if(!suit.equals(GameConstants.JOKER)){
+            sb.append(" of ");
+            sb.append(ConversionUtils.getSuitLabel(suit));
+        }
+        return sb.toString();
     }
 
     public Integer getPower() {

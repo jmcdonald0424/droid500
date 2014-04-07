@@ -98,7 +98,7 @@ public class GLRenderer implements Renderer {
         sprite.generateUvCoords(40);
         sprite.generateShadow(ssu);
         sprites.add(sprite);
-        game.getPlayers().get(0).getCards().get(0).setSprite(sprite);
+        //game.getPlayers().get(0).getCards().get(0).setSprite(sprite);
     }
 
     private void render(float[] m) {

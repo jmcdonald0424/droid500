@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import com.fivehundred.droid500.activity.fragments.MainFragment;
 import com.fivehundred.droid500.application.MainApplication;
+import com.fivehundred.droid500.BuildConfig;
 import com.fivehundred.droid500.R;
 import com.fivehundred.droid500.game.MainGame;
 import com.fivehundred.droid500.game.controllers.GameController;
+import com.fivehundred.droid500.utils.ApplicationConstants;
 import com.fivehundred.droid500.view.GLSurf;
+import com.fivehundred.droid500.view.controllers.ViewController;
 import javax.inject.Inject;
 
 public class MainActivity extends Activity {
@@ -23,6 +28,7 @@ public class MainActivity extends Activity {
 
     // Controllers
     @Inject GameController gameController;
+    @Inject ViewController viewController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,27 @@ public class MainActivity extends Activity {
         // Set our view.
         setContentView(R.layout.main);
 
+        // Retrieve our Relative layout from our main layout we just set to our view.
+        //RelativeLayout layout = (RelativeLayout) findViewById(R.id.gamelayout);
+
+        // Attach our surfaceview to our relative layout from our main layout.
+        //RelativeLayout.LayoutParams glParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        //layout.addView(glSurfaceView, glParams);
+    }
+    
+    /*
+    *  Called when user clicks the start button.
+    *  This is only temporary for testing purposes.
+    */
+    public void startGame(View startButton){
+        if(BuildConfig.DEBUG){
+            Log.d(ApplicationConstants.TAG, "starting game");
+        }
+        gameController.startGame(game);
+        loadGameGraphics();
+    }
+    
+    private void loadGameGraphics(){
         // Retrieve our Relative layout from our main layout we just set to our view.
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.gamelayout);
 

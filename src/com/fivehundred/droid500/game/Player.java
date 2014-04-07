@@ -9,7 +9,7 @@ public class Player {
     private int seatNumber;
     
     public Player(){
-        cards.add(new Card());
+        
     }
 
     public List<Card> getCards() {

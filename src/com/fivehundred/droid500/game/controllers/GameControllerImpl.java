@@ -10,4 +10,10 @@ public class GameControllerImpl implements GameController {
 
         return newGame;
     }
+    
+    @Override
+    public void startGame(MainGame game){
+        game.shuffleDeck();
+        game.dealDeck();
+    }
 }
