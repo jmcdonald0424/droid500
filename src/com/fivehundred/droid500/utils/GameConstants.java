@@ -14,8 +14,31 @@ public final class GameConstants{
     public static final String DIAMONDS_LABEL = "Diamonds";
     public static final String HEARTS_LABEL = "Hearts";
     public static final String JOKER_LABEL = "Joker";
-    public static final String JACK_LABEL = "Jack";
-    public static final String QUEEN_LABEL = "Queen";
-    public static final String KING_LABEL = "King";
     public static final String ACE_LABEL = "Ace";
+    public static final String KING_LABEL = "King";
+    public static final String QUEEN_LABEL = "Queen";
+    public static final String JACK_LABEL = "Jack";
+    public static final String TEN_LABEL = "Ten";
+    public static final String NINE_LABEL = "Nine";
+    public static final String EIGHT_LABEL = "Eight";
+    public static final String SEVEN_LABEL = "Seven";
+    public static final String SIX_LABEL = "Six";
+    public static final String FIVE_LABEL = "Five";
+    public static final String FOUR_LABEL = "Four";
+    
+    public static final int JACK_POWER = 11;
+    public static final int QUEEN_POWER = 12;
+    public static final int KING_POWER = 13;
+    public static final int ACE_POWER = 14;
+    public static final int COMPLIMENTARY_JACK_POWER = 25;
+    public static final int TRUMP_JACK_POWER = 26;
+    public static final int JOKER_POWER = 27; 
+    
+    public static final int TRUMP_COUNT = 13; // 4-10, Q, K, A, J of color, J of suit, Joker
+    
+    public static final int SPADES_BASE_VALUE = 40;
+    public static final int CLUBS_BASE_VALUE = 60;
+    public static final int DIAMONDS_BASE_VALUE = 80;
+    public static final int HEARTS_BASE_VALUE = 100;
+    public static final int NO_TRUMP_BASE_VALUE = 120;
 }

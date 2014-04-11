@@ -3,6 +3,7 @@ package com.fivehundred.droid500.modules;
 import android.content.Context;
 import com.fivehundred.droid500.activity.MainActivity;
 import com.fivehundred.droid500.application.MainApplication;
+import com.fivehundred.droid500.game.MainGame;
 import com.fivehundred.droid500.game.controllers.GameController;
 import com.fivehundred.droid500.game.controllers.GameControllerImpl;
 import dagger.Module;
@@ -10,7 +11,7 @@ import dagger.Provides;
 import javax.inject.Singleton;
 
 @Module(
-    injects = {MainActivity.class}, library = true
+    injects = {MainActivity.class, MainGame.class}, library = true
 )
 
 public class MainModule{

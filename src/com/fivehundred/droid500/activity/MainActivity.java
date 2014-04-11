@@ -108,8 +108,11 @@ public class MainActivity extends Activity {
         if (fragment == null) {
             fragment = new MainFragment();
             manager.beginTransaction().add(fragment, "game").commit();
-            game = gameController.createNewGame();
+            game = gameController.createNewGame(4);
             fragment.setGame(game);
+            // Inject into object graph
+            MainApplication app = (MainApplication)getApplication();
+            app.getObjectGraph().inject(game);
         } else {
             game = fragment.getGame();
         }
