@@ -30,10 +30,10 @@ public class Bidder{
     private int diamondCount = 0;
     private int heartCount = 0;
     private int jokerCount = 0;*/
-    private final int SPADE = 0;
-    private final int CLUB = 1;
-    private final int DIAMOND = 2;
-    private final int HEART = 3;
+    private final int SPADE = GameConstants.SPADES_POWER;
+    private final int CLUB = GameConstants.CLUBS_POWER;
+    private final int DIAMOND = GameConstants.DIAMONDS_POWER;
+    private final int HEART = GameConstants.HEARTS_POWER;
     private final int JOKER = 4;
     
     private final int NO_TRUMP = 0;

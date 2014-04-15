@@ -2,12 +2,22 @@ package com.fivehundred.droid500.utils;
 
 public final class GameConstants{
     
+    // Game Related Values :: These will most likely be dynamic user options at some point
+    public static final int LOWEST_POWER = 4; // 4 is lowest card in play
+    
+    // Constant Values :: These will remain constants
+    
     public static final String SPADES = "S";
     public static final String CLUBS = "C";
     public static final String DIAMONDS = "D";
     public static final String HEARTS = "H";
     public static final String JOKER = "J";
     public static final String SUITS[] = {SPADES, CLUBS, DIAMONDS, HEARTS};
+    
+    public static final int SPADES_POWER = 0;
+    public static final int CLUBS_POWER = 1;
+    public static final int DIAMONDS_POWER = 2;
+    public static final int HEARTS_POWER = 3;
     
     public static final String SPADES_LABEL = "Spades";
     public static final String CLUBS_LABEL = "Clubs";

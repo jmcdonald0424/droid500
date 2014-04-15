@@ -15,21 +15,41 @@ public class Sprite {
     private float uvs[];
     private int index;
     private ShadowSprite shadow;
+    private float scalar;
 
     public Sprite() {
-        base = new RectF(-20f, 30f, 20f, -30f); // Left, Top, Right, Bottom relative to 0,0
-        scaledBase = ViewUtils.copy(base);
-        translation = new PointF(160f, 240f);
-        scale = 1f;
-        angle = 0;
+        init();
+    }
+    
+    public Sprite(int index, float ssu){   
+        this.index = index;
+        scalar = ssu;
+        init(ssu);
     }
 
     public Sprite(float x, float y) {
+        init(x,y);
+    }
+    
+    private void init(){
         base = new RectF(-20f, 30f, 20f, -30f); // Left, Top, Right, Bottom relative to 0,0
         scaledBase = ViewUtils.copy(base);
-        translation = new PointF(x, y);
         scale = 1f;
         angle = 0;
+        translation = new PointF(ViewConstants.BASE_SCALE_WIDTH_PORTRAIT, ViewConstants.BASE_SCALE_HEIGHT_PORTRAIT);
+    }
+    
+    private void init(float x, float y){
+        init();
+        translation = new PointF(x, y);
+    }
+    
+    private void init(float ssu){
+        init();
+        setBaseScale(ssu);
+        generateUvCoords(index);
+        generateShadow(ssu);
+        moveOffScreen(ViewConstants.RIGHT, ViewConstants.CENTER, ssu);
     }
 
     public void setBaseScale(float ssu) {
@@ -130,7 +150,7 @@ public class Sprite {
         uvs[7] = y1;
     }
     
-    public void generateShadow(float ssu){
+    private void generateShadow(float ssu){
         shadow = new ShadowSprite();
         shadow.generateUvCoords(ViewConstants.CARD_SHADOW_INDEX);
         shadow.setBaseScale(ssu);
@@ -144,6 +164,17 @@ public class Sprite {
         shadowCoords.y = translation.y - 1*ssu;
         return shadowCoords;
     }
+    
+    public void moveOffScreen(int xDirection, int yDirection, float ssu){
+        float xOffset = xDirection * ViewConstants.BASE_SCALE_WIDTH_PORTRAIT * ssu;
+        float yOffset = yDirection * ViewConstants.BASE_SCALE_HEIGHT_PORTRAIT * ssu;
+        setTranslation(xOffset, yOffset);
+        shadow.setTranslation(translateShadow(ssu));
+    }
+    
+    public void center(float ssu){
+        translation = new PointF(ViewConstants.BASE_SCALE_WIDTH_PORTRAIT * ssu / 2, ViewConstants.BASE_SCALE_HEIGHT_PORTRAIT * ssu / 2);
+    }
 
     public PointF getTranslation() {
         return translation;
@@ -151,6 +182,12 @@ public class Sprite {
 
     public void setTranslation(PointF translation) {
         this.translation = translation;
+        shadow.setTranslation(translateShadow(scalar));
+    }
+    
+    public void setTranslation(float x, float y){
+        translation.x = x;
+        translation.y = y;
     }
 
     public float getAngle() {
@@ -159,6 +196,7 @@ public class Sprite {
 
     public void setAngle(float angle) {
         this.angle = angle;
+        shadow.setAngle(angle);
     }
 
     public float getScale() {
@@ -167,6 +205,9 @@ public class Sprite {
 
     public void setScale(float scale) {
         this.scale = scale;
+        shadow.setScale(scale);
+        // Simulate sprite in air by distancing the shadow
+        shadow.setTranslation(translateShadow(scalar * scale));
     }
 
     public float[] getUvs() {
@@ -191,6 +232,14 @@ public class Sprite {
 
     public void setShadow(ShadowSprite shadow) {
         this.shadow = shadow;
+    }
+
+    public float getScalar() {
+        return scalar;
+    }
+
+    public void setScalar(float scalar) {
+        this.scalar = scalar;
     }
 
 }

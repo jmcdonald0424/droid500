@@ -22,9 +22,10 @@ import javax.inject.Inject;
 
 public class MainActivity extends Activity {
 
-    private GLSurfaceView glSurfaceView; // Our OpenGL Surfaceview    
+    private GLSurf glSurfaceView; // Our OpenGL Surfaceview    
     private MainGame game; // Main game will be held and referenced here    
     private MainFragment fragment; // MainFragment allows persistence 
+    private int playerCount = 4;
 
     // Controllers
     @Inject GameController gameController;
@@ -49,9 +50,13 @@ public class MainActivity extends Activity {
         // Create new game or pull existing game from fragment
         handleGameFragment();
         
+        // TODO: Preload all available view dependents and start rendering (i.e. cards and other images available after constructor)
+        
         // We create our Surfaceview for our OpenGL here.
+        // Preloaded objects can be rendered at this time.
+        // TODO: Consider second thread in the future
         glSurfaceView = new GLSurf(this);
-
+        
         // Set our view.
         setContentView(R.layout.main);
 
@@ -73,6 +78,7 @@ public class MainActivity extends Activity {
         }
         gameController.startGame(game);
         loadGameGraphics();
+        glSurfaceView.dealCards(game);
     }
     
     private void loadGameGraphics(){
@@ -108,7 +114,7 @@ public class MainActivity extends Activity {
         if (fragment == null) {
             fragment = new MainFragment();
             manager.beginTransaction().add(fragment, "game").commit();
-            game = gameController.createNewGame(4);
+            game = gameController.createNewGame(playerCount);
             fragment.setGame(game);
             // Inject into object graph
             MainApplication app = (MainApplication)getApplication();
@@ -124,5 +130,9 @@ public class MainActivity extends Activity {
 
     public MainGame getGame() {
         return game;
+    }
+    
+    public int getNumberOfPlayers(){
+        return playerCount;
     }
 }

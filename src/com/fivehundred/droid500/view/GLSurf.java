@@ -3,6 +3,7 @@ package com.fivehundred.droid500.view;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import com.fivehundred.droid500.game.MainGame;
 
 public class GLSurf extends GLSurfaceView {
 
@@ -40,5 +41,9 @@ public class GLSurf extends GLSurfaceView {
     public boolean onTouchEvent(MotionEvent e) {
         renderer.processTouchEvent(e);
         return true;
+    }
+    
+    public void dealCards(MainGame game){
+        renderer.dealCards(game);
     }
 }

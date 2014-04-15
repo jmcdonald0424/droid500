@@ -15,7 +15,7 @@ public class MainGame {
     private List<Player> players = new ArrayList<>();
     private List<Card> deck = new ArrayList<>();
     private List<Card> kitty = new ArrayList<>();
-    private int dealerSeat = 0;
+    private int dealerIndex = 0;
     private int currentPlayerIndex = 0;
     private String trumpSuit = "";
     private Hand currentHand;
@@ -28,7 +28,12 @@ public class MainGame {
     @Inject GameController gameController;
     
     public MainGame(int playerCount){
+        init(playerCount);
+    }
+    
+    private void init(int playerCount){
         buildPlayers(playerCount);
+        createDeck();
     }
     
     private void buildPlayers(int playerCount){
@@ -40,7 +45,6 @@ public class MainGame {
     public void createDeck(){
         clearCards();
         buildDeck();
-        shuffleDeck();
     }
     
     private void clearCards(){
@@ -109,7 +113,7 @@ public class MainGame {
         String winningSuit = "";
         SparseArray<SparseArray<String>> allBids = new SparseArray<SparseArray<String>>();
         for(int i=0; i<playerCount; i++){
-            int playerIndex = (dealerSeat + 1 + i) % (playerCount); // Bids always start with player to left of dealer
+            int playerIndex = (dealerIndex + 1 + i) % (playerCount); // Bids always start with player to left of dealer
             Player nextBidder = players.get(playerIndex);
             SparseArray<String> bid = nextBidder.bid();
             allBids.put(playerIndex, bid);
@@ -320,11 +324,11 @@ public class MainGame {
         this.kitty = kitty;
     }
 
-    public int getDealerSeat() {
-        return dealerSeat;
+    public int getDealerIndex() {
+        return dealerIndex;
     }
 
-    public void setDealerSeat(int dealerSeat) {
-        this.dealerSeat = dealerSeat;
+    public void setDealerIndex(int dealerIndex) {
+        this.dealerIndex = dealerIndex;
     }
 }

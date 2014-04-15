@@ -3,7 +3,9 @@ package com.fivehundred.droid500.game;
 import com.fivehundred.droid500.utils.ConversionUtils;
 import com.fivehundred.droid500.utils.GameConstants;
 import com.fivehundred.droid500.utils.Logger;
+import com.fivehundred.droid500.view.Atlas;
 import com.fivehundred.droid500.view.Sprite;
+import com.fivehundred.droid500.view.utils.ViewConstants;
 
 public class Card{
 	
@@ -67,6 +69,35 @@ public class Card{
     
     public boolean isJoker(){
         return power.equals(GameConstants.JOKER_POWER);
+    }
+    
+    public int getUvIndex(){
+        switch(power){
+            case GameConstants.JOKER_POWER:
+                return ViewConstants.JOKER_UV_INDEX;
+            case GameConstants.ACE_POWER:
+                return (ViewConstants.ACE_ROW - 1) * Atlas.MAIN_ATLAS.getColumnCount() + getSuitPower();
+            default:
+                return Atlas.MAIN_ATLAS.getColumnCount() * getSuitPower() + power - 4;
+        }
+    }
+    
+    public int getSuitPower(){
+        switch(suit){
+            case GameConstants.SPADES:
+                return GameConstants.SPADES_POWER;
+            case GameConstants.CLUBS:
+                return GameConstants.CLUBS_POWER;
+            case GameConstants.DIAMONDS:
+                return GameConstants.DIAMONDS_POWER;
+            case GameConstants.HEARTS:
+                return GameConstants.HEARTS_POWER;
+            case GameConstants.JOKER:
+                return GameConstants.JOKER_POWER;
+            default:
+                Logger.log("getSuitPower failed -- No power found for suit: " + suit);
+                return 99;
+        }
     }
 
     public Integer getPower() {

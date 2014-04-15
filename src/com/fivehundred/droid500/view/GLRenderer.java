@@ -9,7 +9,11 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 import com.fivehundred.droid500.activity.MainActivity;
+import com.fivehundred.droid500.application.MainApplication;
+import com.fivehundred.droid500.game.Card;
 import com.fivehundred.droid500.game.MainGame;
+import com.fivehundred.droid500.view.animations.DealerAnimation;
+import com.fivehundred.droid500.view.controllers.AnimationController;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -19,6 +23,8 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import com.fivehundred.droid500.view.utils.ShaderUtils;
+import com.fivehundred.droid500.view.utils.ViewConstants;
+import javax.inject.Inject;
 
 public class GLRenderer implements Renderer {
 
@@ -41,17 +47,20 @@ public class GLRenderer implements Renderer {
     float ssu = 1.0f;
     float ssx = 1.0f;
     float ssy = 1.0f;
-    float swp = 320.0f;
-    float shp = 480.0f;
+    float swp = ViewConstants.BASE_SCALE_WIDTH_PORTRAIT;
+    float shp = ViewConstants.BASE_SCALE_HEIGHT_PORTRAIT;
 
     // Misc
     private Context context;
     private long lastTime;
     private List<Sprite> sprites = new ArrayList<>();
+    
+    @Inject AnimationController animation;
 
     public GLRenderer(Context c) {
         context = c;
         lastTime = System.currentTimeMillis() + 100;
+        loadIntoObjectGraph();
         setupScaling();
         createSprites();
     }
@@ -79,26 +88,32 @@ public class GLRenderer implements Renderer {
         // Get the amount of time the last frame took.
         long elapsed = now - lastTime;
 
-        // Update our example
+        // Update our sprites
         updateSprites();
 
-        // Render our example
+        // Render our view
         render(mtrxProjectionAndView);
 
         // Save the current time to see how long it took 
         lastTime = now;
 
     }
+    
+    private void loadIntoObjectGraph(){        
+        MainApplication app = (MainApplication)(((MainActivity)context).getApplication());
+        app.getObjectGraph().inject(this);
+    }
 
     private void createSprites() {
         MainActivity activity = (MainActivity) context;
         MainGame game = activity.getGame();
-        Sprite sprite = new Sprite();
-        sprite.setBaseScale(ssu);
-        sprite.generateUvCoords(40);
-        sprite.generateShadow(ssu);
-        sprites.add(sprite);
-        //game.getPlayers().get(0).getCards().get(0).setSprite(sprite);
+        for(Card card : game.getDeck()){
+            Sprite sprite = new Sprite(card.getUvIndex(), ssu);
+            
+            // This list should only hold sprites that need to be rendered (are currently on screen)
+            //sprites.add(sprite);
+            card.setSprite(sprite);            
+        }
     }
 
     private void render(float[] m) {
@@ -231,7 +246,7 @@ public class GLRenderer implements Renderer {
 
         float vertices[] = new float[0];
 
-        for (Sprite sprite : sprites) {
+        for (Sprite sprite : new ArrayList<>(sprites)) {
             vertices = combineArrays(vertices, sprite.getShadow().getVertices());
             vertices = combineArrays(vertices, sprite.getVertices());
         }
@@ -275,7 +290,7 @@ public class GLRenderer implements Renderer {
     private void setupUvs() {
         float uvs[] = new float[0];
 
-        for (Sprite sprite : sprites) {
+        for (Sprite sprite : new ArrayList<>(sprites)) {
             // Draw shadow UVs first so source object is drawn on top
             uvs = combineArrays(uvs, sprite.getShadow().getUvs());
             uvs = combineArrays(uvs, sprite.getUvs());
@@ -292,33 +307,22 @@ public class GLRenderer implements Renderer {
     private void updateSprites() {
         setupVertices();
     }
-
+    
     public void processTouchEvent(MotionEvent event) {
-
-        int xHalf = (int) (screenWidth / 2);
-        int yPart = (int) (screenHeight / 3);
-
-        for (Sprite sprite : sprites) {
-            if (event.getX() < xHalf) {
-                if (event.getY() < yPart) {
-                    sprite.scale(-0.01f);
-                } else if (event.getY() < yPart * 2) {
-                    sprite.translate(-10f * ssu, -10f * ssu);
-                } else {
-                    sprite.rotate(0.01f);
-                }
-            } else {
-                if (event.getY() < yPart) {
-                    sprite.scale(0.01f);
-                } else if (event.getY() < yPart * 2) {
-                    sprite.translate(10f * ssu, 10f * ssu);
-                } else {
-                    sprite.rotate(-0.01f);
-                }
-            }
-        }
+        
     }
-
+    
+    public void dealCards(MainGame game){
+        List<Sprite> cardSprites = new ArrayList<>();
+        for(Card card : game.getDeck()){
+            cardSprites.add(card.getSprite());
+        }
+        addSprites(cardSprites);
+        DealerAnimation dealerAnimation = new DealerAnimation(game, ssu);
+        injectIntoObjectGraph(dealerAnimation);
+        dealerAnimation.dealCards();
+    }
+    
     private float[] combineArrays(float[] a, float[] b) {
         float result[] = new float[a.length + b.length];
         System.arraycopy(a, 0, result, 0, a.length);
@@ -346,5 +350,24 @@ public class GLRenderer implements Renderer {
         } else {
             ssu = ssx;
         }
+    }
+    
+    private void addSprite(Sprite sprite){
+        if(!sprites.contains(sprite)){
+            sprites.add(sprite);
+            setupTriangle();
+            setupUvs();
+        }
+    }
+    
+    private void addSprites(List<Sprite> sprites){
+        this.sprites.addAll(sprites);
+        setupTriangle();
+        setupUvs();
+    }
+    
+    private void injectIntoObjectGraph(Object object){
+        MainApplication app = (MainApplication)((MainActivity)context).getApplication();
+        app.getObjectGraph().inject(object);
     }
 }
