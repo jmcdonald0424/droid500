@@ -5,6 +5,10 @@ public class ViewConstants{
     public static final int ACE_ROW = 5;
     public static final int JOKER_UV_INDEX = 44;
     public static final int CARD_SHADOW_INDEX = 46;
+    public static final int CARD_BACK_INDEX = 45;
+    
+    public static final float BASE_CARD_WIDTH = 40.0f;
+    public static final float BASE_CARD_HEIGHT = 60.0f;
     
     public static final float BASE_SCALE_WIDTH_PORTRAIT = 320.0f;
     public static final float BASE_SCALE_HEIGHT_PORTRAIT = 480.0f;
@@ -17,4 +21,6 @@ public class ViewConstants{
     public static final int RIGHT = 2;
     public static final int BOTTOM = -2;
     public static final int CENTER = 1;
+    
+    public static final float SPRITE_SHADOW_SCALER = 0.02f;
 }

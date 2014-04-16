@@ -20,6 +20,10 @@ public class AnimationController{
         return ObjectAnimator.ofFloat(sprite, "angle", angle);
     }
     
+    public ObjectAnimator rotate(Object sprite, float startAngle, float endAngle){        
+        return ObjectAnimator.ofFloat(sprite, "angle", startAngle, endAngle);
+    }
+    
     public ObjectAnimator scale(Object sprite, float startScale, float endScale){
         return ObjectAnimator.ofFloat(sprite, "scale", startScale, endScale);
     }

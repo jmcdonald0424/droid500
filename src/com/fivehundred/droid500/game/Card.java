@@ -12,6 +12,7 @@ public class Card{
     private Integer power;
     private String suit;
     private Sprite sprite;
+    private boolean faceUp = false;
     
     public Card(String suit, Integer power){
         this.suit = suit;
@@ -96,7 +97,19 @@ public class Card{
                 return GameConstants.JOKER_POWER;
             default:
                 Logger.log("getSuitPower failed -- No power found for suit: " + suit);
-                return 99;
+                return -1;
+        }
+    }
+    
+    public void flip(){
+        if(isFaceUp()){
+            sprite.generateUvCoords(ViewConstants.CARD_BACK_INDEX);
+            sprite.triggerUvUpdate();
+            faceUp = false;
+        }else{
+            sprite.generateUvCoords(sprite.getIndex());
+            sprite.triggerUvUpdate();
+            faceUp = true;
         }
     }
 
@@ -122,5 +135,13 @@ public class Card{
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+    
+    public boolean isFaceUp(){
+        return faceUp;
+    }
+    
+    public void setFaceUp(boolean faceUp){
+        this.faceUp = faceUp;
     }
 }

@@ -2,6 +2,7 @@ package com.fivehundred.droid500.view;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import com.fivehundred.droid500.utils.Logger;
 import com.fivehundred.droid500.view.utils.ViewConstants;
 import com.fivehundred.droid500.view.utils.ViewUtils;
 
@@ -16,6 +17,7 @@ public class Sprite {
     private int index;
     private ShadowSprite shadow;
     private float scalar;
+    private boolean triggerUvUpdate;
 
     public Sprite() {
         init();
@@ -32,7 +34,13 @@ public class Sprite {
     }
     
     private void init(){
-        base = new RectF(-20f, 30f, 20f, -30f); // Left, Top, Right, Bottom relative to 0,0
+        float cardWidth = ViewConstants.BASE_CARD_WIDTH;
+        float cardHeight = ViewConstants.BASE_CARD_HEIGHT;
+        // Left, Top, Right, Bottom relative to 0,0
+        base = new RectF(-1 * cardWidth / 2, 
+                         cardHeight / 2, 
+                         cardWidth / 2, 
+                         -1 * cardHeight / 2); 
         scaledBase = ViewUtils.copy(base);
         scale = 1f;
         angle = 0;
@@ -47,7 +55,7 @@ public class Sprite {
     private void init(float ssu){
         init();
         setBaseScale(ssu);
-        generateUvCoords(index);
+        generateUvCoords(ViewConstants.CARD_BACK_INDEX);
         generateShadow(ssu);
         moveOffScreen(ViewConstants.RIGHT, ViewConstants.CENTER, ssu);
     }
@@ -79,7 +87,7 @@ public class Sprite {
 
     public float[] getVertices() {
 
-		// Order of vertices manipulation: scale -> rotate -> translate
+        // Order of vertices manipulation: scale -> rotate -> translate
         // SCALE
         float x1 = scaledBase.left * scale;
         float x2 = scaledBase.right * scale;
@@ -91,9 +99,10 @@ public class Sprite {
         PointF one = new PointF(x1, y2);
         PointF two = new PointF(x1, y1);
         PointF three = new PointF(x2, y1);
-        PointF four = new PointF(x2, y2);
-        float s = (float) Math.sin(angle);
-        float c = (float) Math.cos(angle);
+        PointF four = new PointF(x2, y2); 
+        
+        float s = (float) Math.sin(Math.toRadians(angle));
+        float c = (float) Math.cos(Math.toRadians(angle));
         one.x = x1 * c - y2 * s;
         one.y = x1 * s + y2 * c;
         two.x = x1 * c - y1 * s;
@@ -123,7 +132,7 @@ public class Sprite {
 
     public void generateUvCoords(int imageIndex) {
         uvs = new float[8];
-        index = imageIndex;
+        //index = imageIndex;
         int size = Atlas.MAIN_ATLAS.getSize();
         int columns = Atlas.MAIN_ATLAS.getColumnCount();
         int rows = (int) Math.ceil(size / columns);
@@ -154,14 +163,14 @@ public class Sprite {
         shadow = new ShadowSprite();
         shadow.generateUvCoords(ViewConstants.CARD_SHADOW_INDEX);
         shadow.setBaseScale(ssu);
-        shadow.setScale((float)(scale + scale * 0.05));
+        shadow.setScale((float)(scale + scale * ViewConstants.SPRITE_SHADOW_SCALER));
         shadow.setTranslation(translateShadow(ssu));
     }
     
     private PointF translateShadow(float ssu){
         PointF shadowCoords = new PointF();
-        shadowCoords.x = translation.x + 2*ssu;
-        shadowCoords.y = translation.y - 1*ssu;
+        shadowCoords.x = translation.x + 0.08f * ssu;
+        shadowCoords.y = translation.y - 0.08f * ssu;
         return shadowCoords;
     }
     
@@ -174,6 +183,10 @@ public class Sprite {
     
     public void center(float ssu){
         translation = new PointF(ViewConstants.BASE_SCALE_WIDTH_PORTRAIT * ssu / 2, ViewConstants.BASE_SCALE_HEIGHT_PORTRAIT * ssu / 2);
+    }
+    
+    public void triggerUvUpdate(){
+        triggerUvUpdate = true;
     }
 
     public PointF getTranslation() {
@@ -240,6 +253,14 @@ public class Sprite {
 
     public void setScalar(float scalar) {
         this.scalar = scalar;
+    }
+
+    public boolean isTriggerUvUpdate() {
+        return triggerUvUpdate;
+    }
+
+    public void setTriggerUvUpdate(boolean triggerUvUpdate) {
+        this.triggerUvUpdate = triggerUvUpdate;
     }
 
 }

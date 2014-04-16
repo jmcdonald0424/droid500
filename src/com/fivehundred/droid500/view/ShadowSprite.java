@@ -1,8 +1,13 @@
 package com.fivehundred.droid500.view;
 
 import android.graphics.PointF;
+import com.fivehundred.droid500.view.utils.ViewConstants;
 
 public class ShadowSprite extends Sprite{
+    
+    public ShadowSprite(){
+        
+    }
     
     @Override
     public void translate(float dX, float dY) {
@@ -22,7 +27,7 @@ public class ShadowSprite extends Sprite{
 
     @Override
     public void setScale(float scale) {
-        super.scale = scale;
+        super.scale = (scale + scale * ViewConstants.SPRITE_SHADOW_SCALER);
     }
 
     @Override

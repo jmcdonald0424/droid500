@@ -306,6 +306,19 @@ public class GLRenderer implements Renderer {
 
     private void updateSprites() {
         setupVertices();
+        boolean uvUpdateTriggered = false;
+        for(Sprite sprite : sprites){
+            if(sprite.isTriggerUvUpdate()){
+                uvUpdateTriggered = true;
+                break;
+            }
+        }
+        if(uvUpdateTriggered){
+            for(Sprite sprite : sprites){
+                sprite.setTriggerUvUpdate(false);
+            }
+            setupUvs();
+        }
     }
     
     public void processTouchEvent(MotionEvent event) {
