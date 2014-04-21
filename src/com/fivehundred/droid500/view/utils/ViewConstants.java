@@ -23,4 +23,18 @@ public class ViewConstants{
     public static final int CENTER = 1;
     
     public static final float SPRITE_SHADOW_SCALER = 0.02f;
+    
+    // Score Grid
+    public static final String[] SCORE_GRID = new String[]{
+                    " ",   "S",   "C",   "D",   "H",   "NT",
+                    "6",  "40",  "60",  "80",  "100", "120",
+                    "7",  "140", "160", "180", "200", "220",
+                    "8",  "240", "260", "280", "300", "320",
+                    "9",  "340", "360", "380", "400", "420",
+                    "10", "440", "460", "480", "500", "520"};
+    
+    public static final String[] BID_VALUES = new String[]{"6", "7", "8", "9", "10"};
+    public static final String[] PLAYER_VALUES = new String[]{"Player 1", "Player 2", "Player 3", "Player 4"};
+    
+    public static final String PASSED = "PASSED";
 }

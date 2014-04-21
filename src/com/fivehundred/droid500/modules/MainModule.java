@@ -3,6 +3,7 @@ package com.fivehundred.droid500.modules;
 import android.content.Context;
 import com.fivehundred.droid500.activity.MainActivity;
 import com.fivehundred.droid500.application.MainApplication;
+import com.fivehundred.droid500.game.Auction;
 import com.fivehundred.droid500.game.MainGame;
 import com.fivehundred.droid500.game.controllers.GameController;
 import com.fivehundred.droid500.game.controllers.GameControllerImpl;
@@ -14,7 +15,7 @@ import javax.inject.Singleton;
 
 @Module(
     injects = {MainActivity.class, MainGame.class, GLRenderer.class, 
-                DealerAnimation.class}, library = true
+                DealerAnimation.class, Auction.class}, library = true
 )
 
 public class MainModule{

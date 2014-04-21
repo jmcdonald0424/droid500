@@ -12,6 +12,7 @@ public final class GameConstants{
     public static final String DIAMONDS = "D";
     public static final String HEARTS = "H";
     public static final String JOKER = "J";
+    public static final String NO_TRUMP = "N";
     public static final String SUITS[] = {SPADES, CLUBS, DIAMONDS, HEARTS};
     
     public static final int SPADES_POWER = 0;

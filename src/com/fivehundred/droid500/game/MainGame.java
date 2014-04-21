@@ -1,10 +1,14 @@
 package com.fivehundred.droid500.game;
 
+import android.content.Context;
+import android.graphics.PointF;
 import android.util.SparseArray;
+import com.fivehundred.droid500.activity.MainActivity;
 import com.fivehundred.droid500.game.controllers.GameController;
 import com.fivehundred.droid500.utils.GameConstants;
 import com.fivehundred.droid500.utils.GameUtils;
 import com.fivehundred.droid500.utils.Logger;
+import com.fivehundred.droid500.view.utils.ViewUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +16,7 @@ import javax.inject.Inject;
 
 public class MainGame {
 
+    private final Context context;
     private List<Player> players = new ArrayList<>();
     private List<Card> deck = new ArrayList<>();
     private List<Card> kitty = new ArrayList<>();
@@ -22,12 +27,18 @@ public class MainGame {
     private List<Hand> hands = new ArrayList<>();
     private int handScore[] = new int[2];
     private int gameScore[] = new int[2];
+    private List<Integer> listeners = new ArrayList<>();
+    
+    private Auction auction;
     private int bidTeam = 0;
     private SparseArray<String> winningBid;
+    private int playerBidPower;
+    private String playerBidSuit;
     
     @Inject GameController gameController;
     
-    public MainGame(int playerCount){
+    public MainGame(int playerCount, Context context){
+        this.context = context;
         init(playerCount);
     }
     
@@ -106,68 +117,28 @@ public class MainGame {
         Logger.log("Kitty: " + kitty.size());
     }
     
-    public int bid(){  
-        int playerCount = players.size();
-        int winner = 0;
-        int highestBid = 0;
-        String winningSuit = "";
-        SparseArray<SparseArray<String>> allBids = new SparseArray<SparseArray<String>>();
-        for(int i=0; i<playerCount; i++){
-            int playerIndex = (dealerIndex + 1 + i) % (playerCount); // Bids always start with player to left of dealer
-            Player nextBidder = players.get(playerIndex);
-            SparseArray<String> bid = nextBidder.bid();
-            allBids.put(playerIndex, bid);
-            int bidPower = bid.keyAt(0);
-            String bidSuit = bid.valueAt(0);
-            Logger.lineBreak();
-            if(!(highestBid > bidPower)){
-                if(highestBid == 0){
-                    if(bidPower < 6){
-                        highestBid = 6;
-                    }else{
-                        highestBid = bidPower;
-                    }
-                    winningSuit = bidSuit;
-                    winner = playerIndex;
-                    Logger.log("Player " + playerIndex + " starts the bids with " + highestBid + " " + bidSuit);
-                }else if(highestBid < bidPower){
-                    highestBid = bidPower;
-                    winningSuit = bidSuit;
-                    winner = playerIndex;
-                    Logger.log("Player " + playerIndex + " raises bid " + bidPower + " " + bidSuit);
-                }else if(bid.valueAt(0).equals(GameUtils.highestSuit(bidSuit, winningSuit))){
-                    winningSuit = bidSuit;
-                    winner = playerIndex;
-                    Logger.log("Player " + playerIndex + " raises bid " + bidPower + " " + bidSuit);
-                }else{
-                    Logger.log("Player " + playerIndex + " passes.");
-                }
-            }else{
-                Logger.log("Player " + playerIndex + " passes.");
-            }
-            Logger.lineBreak();
-            Logger.log("Player " + playerIndex + " bids " + bidPower + " of " + bidSuit);
+    public void startBids(){
+        if(auction == null){
+            auction = new Auction(this);
+            GameUtils.injectIntoObjectGraph(auction, context);            
+        }else{
+            auction = new Auction(this);
         }
-        /*for(int i=0; i < allBids.size(); i++){
-            int bid = allBids.valueAt(i).keyAt(0);
-            String suit = allBids.valueAt(i).valueAt(0); 
-            if(bid > highestBid){
-                highestBid = bid;
-                winner = i;
-                winningSuit = suit;
-            }else if(bid == highestBid
-                    && !suit.equals(winningSuit)){
-                if(suit.equals(GameUtils.highestSuit(suit, winningSuit))){
-                    winner = i;
-                    winningSuit = suit;
-                }
-            }
-        }*/
-        Logger.log("Player " + winner + " wins the bid with " + highestBid + " of " + winningSuit);
-        trumpSuit = winningSuit;
-        bidTeam = winner % 2;
-        winningBid = allBids.get(winner);
-        return winner;
+        auction.startBids();
+    }
+    
+    public void processPlayerBid(){
+        SparseArray<String> bid = new SparseArray<String>();
+        bid.put(playerBidPower, playerBidSuit);
+        auction.bid(0, bid);
+        auction.rollBids();
+    }
+    
+    public void setWinningBid(int winnerIndex, SparseArray<String> bid){
+        trumpSuit = bid.valueAt(0);
+        bidTeam = winnerIndex % 2;
+        winningBid = bid;
+        currentPlayerIndex = winnerIndex;
     }
     
     public void openKitty(int winnerIndex){
@@ -213,8 +184,7 @@ public class MainGame {
         }
     }
     
-    public void startHand(int winnerIndex){
-        currentPlayerIndex = winnerIndex;
+    public void startHand(){
         reset();
         newHand();
     }
@@ -299,6 +269,24 @@ public class MainGame {
         Logger.log("Team " + winningTeam + " wins with a score of " + gameScore[winningTeam]);
         Logger.lineBreak(2);
     }
+    
+    public void sortCards(float ssu){
+        for(Player player : players){
+            GameUtils.ascHandSort(player.getCards());
+            for(Card card : player.getCards()){
+                PointF placeCoordinates = ViewUtils.getPlaceCoordinates(player.getPlayerIndex(), player.getCards().indexOf(card), ssu);
+                card.getSprite().setTranslation(placeCoordinates);
+            }
+        }
+    }
+    
+    public List<Card> getMyHand(){
+        return players.get(0).getCards();
+    }
+    
+    public MainActivity getMainActivity(){
+        return (MainActivity)context;
+    }
 
     public List<Player> getPlayers() {
         return players;
@@ -330,5 +318,33 @@ public class MainGame {
 
     public void setDealerIndex(int dealerIndex) {
         this.dealerIndex = dealerIndex;
+    }
+    
+    public void addListener(Integer listener){
+        listeners.add(listener);
+    }
+    
+    public List<Integer> getListeners(){
+        return listeners;
+    }
+
+    public int getPlayerBidPower() {
+        return playerBidPower;
+    }
+
+    public void setPlayerBidPower(int playerBidPower) {
+        this.playerBidPower = playerBidPower;
+    }
+    
+    public void setPlayerBidPower(String playerBidPowerString){
+        this.playerBidPower = Integer.valueOf(playerBidPowerString);
+    }
+
+    public String getPlayerBidSuit() {
+        return playerBidSuit;
+    }
+
+    public void setPlayerBidSuit(String playerBidSuit) {
+        this.playerBidSuit = playerBidSuit;
     }
 }

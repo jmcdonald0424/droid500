@@ -12,6 +12,8 @@ import com.fivehundred.droid500.activity.MainActivity;
 import com.fivehundred.droid500.application.MainApplication;
 import com.fivehundred.droid500.game.Card;
 import com.fivehundred.droid500.game.MainGame;
+import com.fivehundred.droid500.game.Player;
+import com.fivehundred.droid500.utils.Logger;
 import com.fivehundred.droid500.view.animations.DealerAnimation;
 import com.fivehundred.droid500.view.controllers.AnimationController;
 import java.nio.ByteBuffer;
@@ -24,6 +26,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import com.fivehundred.droid500.view.utils.ShaderUtils;
 import com.fivehundred.droid500.view.utils.ViewConstants;
+import com.fivehundred.droid500.view.utils.ViewListenerConstants;
 import javax.inject.Inject;
 
 public class GLRenderer implements Renderer {
@@ -60,9 +63,7 @@ public class GLRenderer implements Renderer {
     public GLRenderer(Context c) {
         context = c;
         lastTime = System.currentTimeMillis() + 100;
-        loadIntoObjectGraph();
         setupScaling();
-        createSprites();
     }
 
     public void onPause() {
@@ -88,6 +89,11 @@ public class GLRenderer implements Renderer {
         // Get the amount of time the last frame took.
         long elapsed = now - lastTime;
 
+        // Check listeners
+        if(getGame() != null && !getGame().getListeners().isEmpty()){
+            handleListeners(getGame().getListeners());
+        }
+        
         // Update our sprites
         updateSprites();
 
@@ -99,15 +105,13 @@ public class GLRenderer implements Renderer {
 
     }
     
-    private void loadIntoObjectGraph(){        
+    public void loadIntoObjectGraph(){        
         MainApplication app = (MainApplication)(((MainActivity)context).getApplication());
         app.getObjectGraph().inject(this);
     }
 
-    private void createSprites() {
-        MainActivity activity = (MainActivity) context;
-        MainGame game = activity.getGame();
-        for(Card card : game.getDeck()){
+    public void createCardSprites(List<Card> cards) {
+        for(Card card : cards){
             Sprite sprite = new Sprite(card.getUvIndex(), ssu);
             
             // This list should only hold sprites that need to be rendered (are currently on screen)
@@ -331,9 +335,42 @@ public class GLRenderer implements Renderer {
             cardSprites.add(card.getSprite());
         }
         addSprites(cardSprites);
-        DealerAnimation dealerAnimation = new DealerAnimation(game, ssu);
+        DealerAnimation dealerAnimation = new DealerAnimation(game, ssu, context);
         injectIntoObjectGraph(dealerAnimation);
         dealerAnimation.dealCards();
+    }
+    
+    /*public void sortCards(){
+        for(Player player : getGame().getPlayers()){
+            for(Card card : player.getCards()){
+                PointF placeCoordinates = ViewUtils.getPlaceCoordinates(player.getPlayerIndex(), player.getCards().indexOf(card), ssu);
+                card.getSprite().setTranslation(placeCoordinates);
+            }
+        }
+        rebuildSprites();
+    }*/
+    
+    public void buildCardSprites(List<Card> cards){
+        sprites.clear();
+        List<Sprite> builtSprites = new ArrayList<>();
+        for(Card card : cards){
+            builtSprites.add(card.getSprite());
+        }
+        addSprites(builtSprites);
+    }
+    
+    private void rebuildSprites(){
+        sprites.clear();
+        List<Sprite> rebuiltSprites = new ArrayList<>();
+        for(Player player : getGame().getPlayers()){
+            for(Card card : player.getCards()){
+                rebuiltSprites.add(card.getSprite());
+            }
+        }
+        for(Card card : getGame().getKitty()){
+            rebuiltSprites.add(card.getSprite());
+        }
+        addSprites(rebuiltSprites);
     }
     
     private float[] combineArrays(float[] a, float[] b) {
@@ -382,5 +419,22 @@ public class GLRenderer implements Renderer {
     private void injectIntoObjectGraph(Object object){
         MainApplication app = (MainApplication)((MainActivity)context).getApplication();
         app.getObjectGraph().inject(object);
+    }
+    
+    private void handleListeners(List<Integer> listeners){
+        for(int listener : listeners){
+            switch(listener){
+                case ViewListenerConstants.REBUILD_SPRITES:
+                    rebuildSprites();
+                    break;
+                default:
+                    Logger.logError("handleListeners failed -- No handler found for " + listener);
+            }
+        }
+        listeners.clear();
+    }
+    
+    private MainGame getGame(){
+        return ((MainActivity)context).getGame();
     }
 }

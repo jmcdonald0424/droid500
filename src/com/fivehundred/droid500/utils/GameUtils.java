@@ -1,6 +1,9 @@
 package com.fivehundred.droid500.utils;
 
+import android.content.Context;
 import android.util.SparseArray;
+import com.fivehundred.droid500.activity.MainActivity;
+import com.fivehundred.droid500.application.MainApplication;
 import com.fivehundred.droid500.game.Card;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +24,8 @@ public class GameUtils{
     public static int valueSuit(String suit){
         int value = 0;
         switch(suit){
+            case GameConstants.JOKER:
+                value++;
             case GameConstants.HEARTS:
                 value++;
             case GameConstants.DIAMONDS:
@@ -39,6 +44,10 @@ public class GameUtils{
     
     public static void ascSort(List<Card> cards){
         Collections.sort(cards, new CardComparator(0));
+    }
+    
+    public static void ascHandSort(List<Card> cards){
+        Collections.sort(cards, new CardComparator(2));
     }
     
     public static void descSort(List<Card> cards){
@@ -95,5 +104,10 @@ public class GameUtils{
         }
         Logger.log("getSuit failed - - cards did not match a single suit");
         return null;
+    }
+    
+    public static void injectIntoObjectGraph(Object object, Context context){
+        MainApplication app = (MainApplication)((MainActivity)context).getApplication();
+        app.getObjectGraph().inject(object);
     }
 }

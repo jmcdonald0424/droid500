@@ -165,4 +165,8 @@ public class Player {
     public void setBidder(Bidder bidder) {
         this.bidder = bidder;
     }
+    
+    public boolean isComputer(){
+        return playerIndex != 0; // TODO: This will need to change when multiple players are added
+    }
 }

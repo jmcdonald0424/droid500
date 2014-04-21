@@ -1,7 +1,10 @@
 package com.fivehundred.droid500.view.utils;
 
+import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import com.fivehundred.droid500.R;
+import com.fivehundred.droid500.utils.Logger;
 
 public class ViewUtils {
 
@@ -39,6 +42,55 @@ public class ViewUtils {
                 return new PointF(center + (divider * 2), center);
             default:                
                 return new PointF(center, center - (divider * 2));
+        }
+    }
+    
+    public static PointF getPlaceCoordinates(int playerIndex, int cardIndex, float ssu){
+        float padding = (ViewConstants.BASE_SCALE_MIN * ssu / 2) - (ViewConstants.BASE_CARD_WIDTH * 10 / 2 / 2 * ssu);
+        float coordOffset = padding + cardIndex * ViewConstants.BASE_CARD_WIDTH / 2 * ssu;
+        switch(playerIndex){
+            case 0:
+                return new PointF(ViewConstants.BASE_CARD_WIDTH / 2 * ssu + coordOffset, 
+                                  ViewConstants.BASE_CARD_HEIGHT / 2 * ssu);
+            case 1:
+                return new PointF(ViewConstants.BASE_CARD_HEIGHT / 2 * ssu,
+                                  ViewConstants.BASE_SCALE_MIN * ssu - ViewConstants.BASE_CARD_WIDTH / 2 * ssu - coordOffset);
+            case 2:
+                return new PointF(ViewConstants.BASE_SCALE_MIN * ssu - ViewConstants.BASE_CARD_WIDTH / 2 * ssu - coordOffset,
+                                  ViewConstants.BASE_SCALE_MIN * ssu - ViewConstants.BASE_CARD_HEIGHT / 2 * ssu);
+            case 3:
+                return new PointF(ViewConstants.BASE_SCALE_MIN * ssu - ViewConstants.BASE_CARD_HEIGHT / 2 * ssu,
+                                  ViewConstants.BASE_CARD_WIDTH / 2 * ssu + coordOffset);
+            case 4:
+                return new PointF(ViewConstants.BASE_SCALE_MIN / 2 * ssu,
+                                  ViewConstants.BASE_SCALE_MIN / 2 * ssu);
+            default:
+                Logger.logError("getCoordinates failed -- No coordinates found for player: " + playerIndex);
+                return null;
+        }
+    }
+    
+    public static int getLayout(int layout){
+        switch(layout){
+            case ViewListenerConstants.LOAD_GAME_LAYOUT:
+                return R.id.gamelayout;
+            case ViewListenerConstants.LOAD_BID_LAYOUT:
+                return R.id.bidlayout;
+            default:
+                Logger.logError("getLayout failed -- No layout found for " + layout);
+                return -1;
+        }
+    }
+    
+    public static int getView(int layout){
+        switch(layout){
+            case ViewListenerConstants.LOAD_GAME_LAYOUT:
+                return R.layout.main;
+            case ViewListenerConstants.LOAD_BID_LAYOUT:
+                return R.layout.bid_portrait;
+            default:
+                Logger.logError("getView failed -- No view layout found for " + layout);
+                return -1;
         }
     }
 }

@@ -46,4 +46,8 @@ public class GLSurf extends GLSurfaceView {
     public void dealCards(MainGame game){
         renderer.dealCards(game);
     }
+
+    public GLRenderer getRenderer() {
+        return renderer;
+    }
 }
